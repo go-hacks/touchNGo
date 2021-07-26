@@ -1,9 +1,20 @@
 # touchNGo
 Complete Linux Touchscreen Control Replacement
 
-Current features (taken from touchngo.go)
+Current features
 
 Full mouse controls(left/right clicks, drag-select, etc)
+
+(to use this software effectively, you must know how the clicks work)
+
+(left click and drag works as you would think, however when you let up
+after holding for about a second, you are instead prompted with a right
+click on release instead of just a released left click as you would think)
+
+(this is especially useful for drag selecting a bunch of files and immediately
+having a right click when you release for a whole saved click)
+
+(it is quite slick when you get used to it)
 
 1 Finger swipe (up/down)(left/right in upgrades, unusable)
 
