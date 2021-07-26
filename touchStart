@@ -1,4 +1,4 @@
 killall touchNGo &> /dev/null
-cd ~/touchNGo
+#cd ~/touchNGo
 ./touchNGo "GXTP7386:00 27C6:0113" $1
 #./touchNGo "GXTP7386:00 27C6:0113" DEBUG
