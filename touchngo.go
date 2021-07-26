@@ -40,8 +40,8 @@ import (
 )
 
 // Set global values
-var maxX int32 = 7679
-var maxY int32 = 4319
+var maxX int32 = 0
+var maxY int32 = 0
 var isLocked bool = false
 var resolX int32
 var resolY int32
