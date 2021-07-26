@@ -79,6 +79,8 @@ and init.go line 149 for the up/down swipe keyboards.
 
 You can see what was done and can probably mix n match keyboard calls and system cmds
 into any of the gestures. Eventually this will all be controlled via a config file
-but for now I have it hard coded for my setup with the other options commented out.
+with an array of keyboards and such for all of the finger count gestures but
+for now I have it hard coded for my setup with the other options commented out.
+
 Swipe R/L function does work but I need to finish rewriting it into the new MPTS
-format that I just finished before uploading all of this.
+format that I just finished before uploading all of this so it is disabled.
