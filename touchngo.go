@@ -3,27 +3,27 @@ package main
 /*
               +---Version 0.52---+
 <---Complete Linux Touchscreen Control Replacement--->
-				!No OS or application specific touch
-				!controls will work while in use.
-				!Disables touchscreen via xinput while
+	!No OS or application specific touch
+	!controls will work while in use.
+	!Disables touchscreen via xinput while
         !in use and re-enables upon exiting.
-				*In theory, the main controls could
-				*be disabled along with leaving xinput
-				*running to achieve a "supplemental" mode
-				*for only adding gestures to stock Linux.
-				*You could also have this on a dock to
-				*disable while using a specific application
-				*with special touch controls in which
-				*case TouchNGo reverts back to stock
-				*controls upon exiting or being aborted.
+	*In theory, the main controls could
+	*be disabled along with leaving xinput
+	*running to achieve a "supplemental" mode
+	*for only adding gestures to stock Linux.
+	*You could also have this on a dock to
+	*disable while using a specific application
+	*with special touch controls in which
+	*case TouchNGo reverts back to stock
+	*controls upon exiting or being aborted.
     <<<--------------- Features --------------->>>
         Full mouse controls(left/right clicks, drag-select, etc)
         1 Finger swipe (up/down/left/right)
         2-10 Finger tap gestures
-				Auto-updates screen rotation & resolution
-				Supports inverted touchscreen (left/right rotation yet to come)
-				Supports touchscreen locking via vol buttons (Dn/Up 2x)
-				All active functions now use MPTS (multi-point touchstate)
+	Auto-updates screen rotation & resolution
+	Supports inverted touchscreen (left/right rotation yet to come)
+	Supports touchscreen locking via vol buttons (Dn/Up 2x)
+	All active functions now use MPTS (multi-point touchstate)
 */
 
 import (
