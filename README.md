@@ -18,6 +18,11 @@ having a right click when you release for a whole saved click)
 
 1 Finger swipe (up/down)(left/right in upgrades, unusable)
 
+(obviously some minor conflicts arise while using 1 finger swiping. it is
+pretty much proof of concept and does work find when you're used to where
+you can swipe and not cause issues. naturally, 2+ finger swiping will come
+in the future)
+
 2-10 Finger tap gestures (3 & 5 configured to F12 for yakuake and onboard keyboard)
 
 Auto-updates screen rotation & resolution
