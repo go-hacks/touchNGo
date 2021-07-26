@@ -6,14 +6,17 @@ code for your setup but I will point you in the right directions.
 
 If you want a more complete description of what this is, see touchngo.go
 
+git clone https://github.com/go-hacks/touchNGo.git
+to your home directory. (This is important!)
+
 First you will want to build it by running the included build script ./build
 You may require these go get dependencies
   For reading touchscreen events
 	"github.com/gvalkov/golang-evdev"
 	For executing mouse clicks
 	"github.com/bendahl/uinput"
-  For executing keyboard actions
-  "github.com/micmonay/keybd_event"
+  	For executing keyboard actions
+  	"github.com/micmonay/keybd_event"
 
 Next, run ./touchNGo -l to get the list of input devices.
 Then, put your touchscreen devices name in the included launch script touchStart
