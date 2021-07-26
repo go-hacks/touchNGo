@@ -19,7 +19,7 @@ having a right click when you release for a whole saved click)
 1 Finger swipe (up/down)(left/right in upgrades, unusable)
 
 (obviously some minor conflicts arise while using 1 finger swiping. it is
-pretty much proof of concept and does work find when you're used to where
+pretty much proof of concept and does work fine when you're used to where
 you can swipe and not cause issues. naturally, 2+ finger swiping will come
 in the future)
 
