@@ -3,14 +3,14 @@ Complete Linux Touchscreen Control Replacement
 
 Current features (taken from touchngo.go)
 
-        Full mouse controls(left/right clicks, drag-select, etc)
-        1 Finger swipe (up/down)(left/right in upgrades, unusable)
-        2-10 Finger tap gestures (3 & 5 configured to F12 for yakuake and onboard keyboard)
-	Auto-updates screen rotation & resolution
-	Supports inverted touchscreen (left/right rotation yet to come)
-	Supports touchscreen locking via vol buttons (Dn/Up 2x)
-	^this can be finicky depending on your buttons
-	All active functions now use MPTS (multi-point touchstate)
+Full mouse controls(left/right clicks, drag-select, etc)
+1 Finger swipe (up/down)(left/right in upgrades, unusable)
+2-10 Finger tap gestures (3 & 5 configured to F12 for yakuake and onboard keyboard)
+Auto-updates screen rotation & resolution
+Supports inverted touchscreen (left/right rotation yet to come)
+Supports touchscreen locking via vol buttons (Dn/Up 2x)
+^this can be finicky depending on your buttons
+All active functions now use MPTS (multi-point touchstate)
 
 To use this, you will currently have to modify some sections of
 code for your setup but I will point you in the right directions.
