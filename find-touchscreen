@@ -1,0 +1,1 @@
+libinput list-devices |grep Device|grep -viE 'button|keyboard|stylus|camera|hid events|lid switch|video bus|logitech wireless mouse|keybd interface|touchngomouse'
