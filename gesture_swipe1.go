@@ -10,7 +10,7 @@ import (
 )
 
 func isGestureSwipeUD1 (StateChan chan mpts, UpKeyboard keybd_event.KeyBonding, DownKeyboard keybd_event.KeyBonding) {
-	var startX, startY int32 = -1, -1
+	var startX, startY int32
 	var currX, currY int32
 	var swipeLength = halfY
 	var subSwipeLength = swipeLength / 3
@@ -31,7 +31,7 @@ func isGestureSwipeUD1 (StateChan chan mpts, UpKeyboard keybd_event.KeyBonding, 
 			}
 		}
 		if !isLocked && isStart {
-			if tempState.X[0] != 0 && tempState.Y[0] != 0 {
+			if tempState.isDown[0] {
 				currX = int32(tempState.X[0])
 				currY = int32(tempState.Y[0])
 			}
@@ -73,7 +73,6 @@ func isGestureSwipeUD1 (StateChan chan mpts, UpKeyboard keybd_event.KeyBonding, 
 				isStart = false
 				swipeUpCheck[0], swipeUpCheck[1], swipeUpCheck[2] = false, false, false
 				swipeDnCheck[0], swipeDnCheck[1], swipeDnCheck[2] = false, false, false
-				startX, startY = -1, -1
 				continue
 			}
 			if tempState.isDown[1] || currX > startX+(maxX/10) || currX < startX-(maxX/10) || currX > maxX-(maxX/20) || currX < (maxX/20) || time.Now().Sub(touchTime) > 2*time.Second {
@@ -85,7 +84,6 @@ func isGestureSwipeUD1 (StateChan chan mpts, UpKeyboard keybd_event.KeyBonding, 
 				isStart = false
 				swipeUpCheck[0], swipeUpCheck[1], swipeUpCheck[2] = false, false, false
 				swipeDnCheck[0], swipeDnCheck[1], swipeDnCheck[2] = false, false, false
-				startX, startY = -1, -1
 			}
 		}
 	}
