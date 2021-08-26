@@ -1,1 +1,2 @@
+#!/usr/bin/env bash
 go build -o touchNGo *.go
