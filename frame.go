@@ -10,10 +10,12 @@ import (
 func frameAnalyzer(EventFrameChan chan []evdev.InputEvent) {
 	isMouseCtrlChan := make(chan mpts)
 	isGestureTapChan := make(chan mpts)
-	isGestureSwipeUD1Chan := make(chan mpts)
+	isGestureSwipeUp1Chan := make(chan mpts)
+	isGestureSwipeDown1Chan := make(chan mpts)
 	go isMouseCtrl(isMouseCtrlChan)
 	go isGestureTap(isGestureTapChan, threeTapKeyboard)
-	go isGestureSwipeUD1(isGestureSwipeUD1Chan, isSwipeUD1Ukb, isSwipeUD1Dkb)
+	go isGestureSwipeUp1(isGestureSwipeUp1Chan, isSwipeUD1Ukb, isSwipeUD1Dkb)
+	go isGestureSwipeDown1(isGestureSwipeDown1Chan, isSwipeUD1Ukb, isSwipeUD1Dkb)
 	var currPoint int32
 	for {
 		eventFrame := <-EventFrameChan
@@ -43,10 +45,10 @@ func frameAnalyzer(EventFrameChan chan []evdev.InputEvent) {
 		}
 		isMouseCtrlChan <- touchState
 		isGestureTapChan <- touchState
-		isGestureSwipeUD1Chan <- touchState
+		isGestureSwipeUp1Chan <- touchState
+		isGestureSwipeDown1Chan <- touchState
 		if isDebugMode {
 			fmt.Println(touchState)
 		}
-		//fmt.Println("frameSTOP")
 	}
 }

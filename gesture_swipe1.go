@@ -9,58 +9,107 @@ import (
 	"time"
 )
 
-func isGestureSwipeUD1 (StateChan chan mpts, UpKeyboard keybd_event.KeyBonding, DownKeyboard keybd_event.KeyBonding) {
-	var startX, startY int32
-	var currX, currY int32
+func downCheckOne (checkChan chan bool, StateChan chan mpts, startX int32, startY int32) {
+	startTime := time.Now()
 	var swipeLength = halfY
 	var subSwipeLength = swipeLength / 3
+	for {
+		tempState := <-StateChan
+		currX := int32(tempState.X[0])
+		currY := int32(tempState.Y[0])
+		// fail if angled or over scrollbar(both screen edges)
+		if currX > startX+(maxX/10) || currX < startX-(maxX/10) || currX > maxX-(maxX/20) || currX < (maxX/20) {
+			checkChan <- false
+			break
+		}
+		// fail if multi-touch, swipe up, or over 2 sec(timeout)
+		if tempState.isDown[1] || currY < startY - 15 || time.Now().Sub(startTime) > 2*time.Second {
+			checkChan <- false
+			break
+		}
+		// pass if reaches down far enough without previous fails
+		if currY >= startY + subSwipeLength {
+			checkChan <- true
+			break
+		}
+	}
+	return
+}
+
+func downCheckTwo (checkChan chan bool, StateChan chan mpts, startX int32, startY int32) {
+	startTime := time.Now()
+	var swipeLength = halfY
+	var subSwipeLength = swipeLength / 3
+	for {
+		tempState := <-StateChan
+		currX := int32(tempState.X[0])
+		currY := int32(tempState.Y[0])
+		// fail if angled or over scrollbar(both screen edges)
+		if currX > startX+(maxX/10) || currX < startX-(maxX/10) || currX > maxX-(maxX/20) || currX < (maxX/20) {
+			checkChan <- false
+			break
+		}
+		// fail if multi-touch, swipe up, or over 2 sec(timeout)
+		if tempState.isDown[1] || currY < startY - 15 || time.Now().Sub(startTime) > 2*time.Second {
+			checkChan <- false
+			break
+		}
+		// pass if reaches down far enough without previous fails
+		if currY >= startY + (subSwipeLength * 2) {
+			checkChan <- true
+			break
+		}
+	}
+	return
+}
+
+func downCheckThree (checkChan chan bool, StateChan chan mpts, startX int32, startY int32) {
+	startTime := time.Now()
+	var swipeLength = halfY
+	//var subSwipeLength = swipeLength / 3
+	for {
+		tempState := <-StateChan
+		currX := int32(tempState.X[0])
+		currY := int32(tempState.Y[0])
+		// fail if angled or over scrollbar(both screen edges)
+		if currX > startX+(maxX/10) || currX < startX-(maxX/10) || currX > maxX-(maxX/20) || currX < (maxX/20) {
+			checkChan <- false
+			break
+		}
+		// fail if multi-touch, swipe up, or over 2 sec(timeout)
+		if tempState.isDown[1] || currY < startY - 15 || time.Now().Sub(startTime) > 2*time.Second {
+			checkChan <- false
+			break
+		}
+		// pass if reaches down far enough without previous fails
+		if currY >= startY + swipeLength {
+			checkChan <- true
+			break
+		}
+	}
+	return
+}
+
+func isGestureSwipeDown1 (StateChan chan mpts, UpKeyboard keybd_event.KeyBonding, DownKeyboard keybd_event.KeyBonding) {
+	var startX, startY int32
 	var lastTap int32
 	var isStart bool
-	var touchTime time.Time
-	var swipeUpCheck, swipeDnCheck [3]bool
+	checkChannel := make(chan bool)
 	for {
 		tempState := <-StateChan
 		if !isLocked && !isStart && tempState.tapCnt > lastTap {
 			if tempState.isGesture {
 				isStart = true
-				touchTime = time.Now()
 				startX = int32(tempState.X[0])
 				startY = int32(tempState.Y[0])
 				lastTap = tempState.tapCnt
-				continue
-			}
-		}
-		if !isLocked && isStart {
-			if tempState.isDown[0] {
-				currX = int32(tempState.X[0])
-				currY = int32(tempState.Y[0])
-			}
-			if currY >= startY + subSwipeLength {
-				swipeDnCheck[0] = true
-			} else if currY <= startY - subSwipeLength {
-				swipeUpCheck[0] = true
-			}
-			if currY >= startY + (subSwipeLength * 2) {
-				swipeDnCheck[1] = true
-			} else if currY <= startY - (subSwipeLength * 2) {
-				swipeUpCheck[1] = true
-			}
-			if currY >= startY + swipeLength {
-				swipeDnCheck[2] = true
-			} else if currY <= startY - swipeLength {
-				swipeUpCheck[2] = true
-			}
-			if !tempState.isGesture && time.Now().Sub(touchTime) < 2*time.Second {
-				if swipeUpCheck[0] == true && swipeUpCheck[1] == true && swipeUpCheck[2] == true {
-					switch touchState.rotation {
-					case inv:
-						fmt.Println("DOWN SWIPE!")
-						execKeys(DownKeyboard)
-					case norm:
-						fmt.Println("UP SWIPE!")
-						execKeys(UpKeyboard)
-					}
-				} else if swipeDnCheck[0] == true && swipeDnCheck[1] == true && swipeDnCheck[2] == true {
+				go downCheckOne(checkChannel, StateChan, startX, startY)
+				go downCheckTwo(checkChannel, StateChan, startX, startY)
+				go downCheckThree(checkChannel, StateChan, startX, startY)
+				passOne := <- checkChannel
+				passTwo := <- checkChannel
+				passThree := <- checkChannel
+				if passOne && passTwo && passThree {
 					switch touchState.rotation {
 					case inv:
 						fmt.Println("UP SWIPE!")
@@ -71,20 +120,123 @@ func isGestureSwipeUD1 (StateChan chan mpts, UpKeyboard keybd_event.KeyBonding, 
 					}
 				}
 				isStart = false
-				swipeUpCheck[0], swipeUpCheck[1], swipeUpCheck[2] = false, false, false
-				swipeDnCheck[0], swipeDnCheck[1], swipeDnCheck[2] = false, false, false
-				continue
 			}
-			if tempState.isDown[1] || currX > startX+(maxX/10) || currX < startX-(maxX/10) || currX > maxX-(maxX/20) || currX < (maxX/20) || time.Now().Sub(touchTime) > 2*time.Second {
-				fmt.Println("BAIL FROM SWIPE!")
-				// Bail-out check includes multi-touch
-				// and out of tolerance for being too angled
-				// or by screen edges to avoid scrollbar
-				// and lastly if over 2 seconds
+		}
+	}
+}
+
+func upCheckOne (checkChan chan bool, StateChan chan mpts, startX int32, startY int32) {
+	startTime := time.Now()
+	var swipeLength = halfY
+	var subSwipeLength = swipeLength / 3
+	for {
+		tempState := <-StateChan
+		currX := int32(tempState.X[0])
+		currY := int32(tempState.Y[0])
+		// fail if angled or over scrollbar(both screen edges)
+		if currX > startX+(maxX/10) || currX < startX-(maxX/10) || currX > maxX-(maxX/20) || currX < (maxX/20) {
+			checkChan <- false
+			break
+		}
+		// fail if multi-touch, swipe down, or over 2 sec(timeout)
+		if tempState.isDown[1] || currY > startY + 15 || time.Now().Sub(startTime) > 2*time.Second {
+			checkChan <- false
+			break
+		}
+		// pass if reaches down far enough without previous fails
+		if currY <= startY - subSwipeLength {
+			checkChan <- true
+			break
+		}
+	}
+	return
+}
+
+func upCheckTwo (checkChan chan bool, StateChan chan mpts, startX int32, startY int32) {
+	startTime := time.Now()
+	var swipeLength = halfY
+	var subSwipeLength = swipeLength / 3
+	for {
+		tempState := <-StateChan
+		currX := int32(tempState.X[0])
+		currY := int32(tempState.Y[0])
+		// fail if angled or over scrollbar(both screen edges)
+		if currX > startX+(maxX/10) || currX < startX-(maxX/10) || currX > maxX-(maxX/20) || currX < (maxX/20) {
+			checkChan <- false
+			break
+		}
+		// fail if multi-touch, swipe down, or over 2 sec(timeout)
+		if tempState.isDown[1] || currY > startY + 15 || time.Now().Sub(startTime) > 2*time.Second {
+			checkChan <- false
+			break
+		}
+		// pass if reaches down far enough without previous fails
+		if currY <= startY - (subSwipeLength * 2) {
+			checkChan <- true
+			break
+		}
+	}
+	return
+}
+
+func upCheckThree (checkChan chan bool, StateChan chan mpts, startX int32, startY int32) {
+	startTime := time.Now()
+	var swipeLength = halfY
+	//var subSwipeLength = swipeLength / 3
+	for {
+		tempState := <-StateChan
+		currX := int32(tempState.X[0])
+		currY := int32(tempState.Y[0])
+		// fail if angled or over scrollbar(both screen edges)
+		if currX > startX+(maxX/10) || currX < startX-(maxX/10) || currX > maxX-(maxX/20) || currX < (maxX/20) {
+			checkChan <- false
+			break
+		}
+		// fail if multi-touch, swipe down, or over 2 sec(timeout)
+		if tempState.isDown[1] || currY > startY + 15 || time.Now().Sub(startTime) > 2*time.Second {
+			checkChan <- false
+			break
+		}
+		// pass if reaches down far enough without previous fails
+		if currY <= startY - swipeLength {
+			checkChan <- true
+			break
+		}
+	}
+	return
+}
+
+func isGestureSwipeUp1 (StateChan chan mpts, UpKeyboard keybd_event.KeyBonding, DownKeyboard keybd_event.KeyBonding) {
+	var startX, startY int32
+	var lastTap int32
+	var isStart bool
+	checkChannel := make(chan bool)
+	for {
+		tempState := <-StateChan
+		if !isLocked && !isStart && tempState.tapCnt > lastTap {
+			//if tempState.isGesture {
+				isStart = true
+				startX = int32(tempState.X[0])
+				startY = int32(tempState.Y[0])
+				lastTap = tempState.tapCnt
+				go upCheckOne(checkChannel, StateChan, startX, startY)
+				go upCheckTwo(checkChannel, StateChan, startX, startY)
+				go upCheckThree(checkChannel, StateChan, startX, startY)
+				passOne := <- checkChannel
+				passTwo := <- checkChannel
+				passThree := <- checkChannel
+				if passOne && passTwo && passThree {
+					switch touchState.rotation {
+					case inv:
+						fmt.Println("DOWN SWIPE!")
+						execKeys(DownKeyboard)
+					case norm:
+						fmt.Println("UP SWIPE!")
+						execKeys(UpKeyboard)
+					}
+				}
 				isStart = false
-				swipeUpCheck[0], swipeUpCheck[1], swipeUpCheck[2] = false, false, false
-				swipeDnCheck[0], swipeDnCheck[1], swipeDnCheck[2] = false, false, false
-			}
+			//}
 		}
 	}
 }
