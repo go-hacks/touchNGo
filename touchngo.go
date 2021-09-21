@@ -1,7 +1,7 @@
 package main
 
 /*
-              +---Version 0.52---+
+              +---Version 0.53---+
 <---Complete Linux Touchscreen Control Replacement--->
 	!No OS or application specific touch
 	!controls will work while in use.
