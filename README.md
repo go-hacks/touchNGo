@@ -24,7 +24,7 @@ If you have panel launchers, you may set them to the included flip-screen.pl whi
 allow for a button to invert the touchscreen and back again and so on.
 
 Note: Make sure all executables are marked as such. touchNGo, touchStart,
-flip-screen.pl, and rot.sh may all require chmod +x
+flip-screen.pl, rot.sh, and the build script may all require chmod +x
 
 To set the specific actions for gestures, you will find them in gesture_tap.go line 40
 and init.go line 149 for the up/down swipe keyboards.
