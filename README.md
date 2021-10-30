@@ -13,7 +13,7 @@ First you will want to build it by running the included build script ./build
 
 Next, run ./touchNGo -l to get the list of input devices.
 
-Then, put your touchscreen devices name in the included launch script touchStart
+Then, put your touchscreen device's name in the included launch script touchStart
 
 Replace mine, GXTP7386:00 27C6:0113, with whatever yours is.
 
@@ -35,11 +35,14 @@ at lines 111 & 229 where the cases begin there as well.
 You can see what was done and can probably mix n match keyboard calls and system cmds
 into any of the gestures. Eventually this will all be controlled via a JSON config file
 but for now I have it hard coded for my setup with the other options commented out.
-Swipe R/L function ist disabled for now as I need to finish rewriting it into the new
-MPTS (Multi-Poin Touch State) format like the rest of the code uses.
+Swipe R/L function is disabled for now as I need to finish rewriting it into the new
+MPTS (Multi-Point Touch State) format like the rest of the code uses.
 
 I have changed the screen locking function to 9 & 10 finger tap instead of using the
 volume buttons as it works better and doesn't require the use of a 2nd event device.
+It's set to 9 & 10 because it can be tricky to get all 10 taps to register every time
+and it makes the whole process feel smoother and more responsive.
+
 If you prefer to use the volume buttons, I left the module intact and you can remove
-the .dpcd from its name and uncommenct the subroutine in touchngo.go and the init
+the .dpcd from its name and uncomment the subroutine in touchngo.go and the init
 stuff for it in init.go. It is pretty straightforward.
