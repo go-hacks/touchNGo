@@ -1,4 +1,4 @@
 go get "github.com/gvalkov/golang-evdev"
 go get "github.com/bendahl/uinput"
-go get "github.com/micmonay/keybd_event"
+go get "github.com/go-vgo/robotgo"
 go build -o touchNGo *.go
