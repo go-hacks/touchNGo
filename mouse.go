@@ -9,7 +9,7 @@ import (
 
 // Handles all basic mouse controls.
 // movement, drag, left/right click
-func isMouseCtrl(StateChan chan mpts) {
+func mouseCtrl(StateChan chan mpts) {
 	//var TapCnt int32
 	var isStart bool
 	var isMouseDown bool

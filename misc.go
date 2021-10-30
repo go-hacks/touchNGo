@@ -9,8 +9,6 @@ import (
 	"time"
 	// For reading touchscreen events
 	"github.com/gvalkov/golang-evdev"
-	// For executing keyboard actions
-	"github.com/micmonay/keybd_event"
 )
 
 type screenData struct {
@@ -43,12 +41,6 @@ func isEventMatch(event *evdev.InputEvent, matchEvent tevMatch) bool {
 		}
 	}
 	return false
-}
-
-func execKeys(keyboard keybd_event.KeyBonding) {
-	keyboard.Press()
-	time.Sleep(10 * time.Millisecond)
-	keyboard.Release()
 }
 
 func getScreenSpecs() screenData {
@@ -87,6 +79,15 @@ func resetTouchState() {
 	rotation := touchState.rotation
 	touchState = blankState
 	touchState.rotation = rotation
+}
+
+func screenLocker () {
+	if isLocked {
+		isLocked = false
+	} else if	!isLocked {
+		isLocked = true
+	}
+	return
 }
 
 func parseFatal(err error, msg string) {

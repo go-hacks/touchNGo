@@ -8,14 +8,14 @@ import (
 
 // Updates the touchstate frame by frame
 func frameAnalyzer(EventFrameChan chan []evdev.InputEvent) {
-	isMouseCtrlChan := make(chan mpts)
-	isGestureTapChan := make(chan mpts)
-	isGestureSwipeUp1Chan := make(chan mpts)
-	isGestureSwipeDown1Chan := make(chan mpts)
-	go isMouseCtrl(isMouseCtrlChan)
-	go isGestureTap(isGestureTapChan, threeTapKeyboard)
-	go isGestureSwipeUp1(isGestureSwipeUp1Chan, isSwipeUD1Ukb, isSwipeUD1Dkb)
-	go isGestureSwipeDown1(isGestureSwipeDown1Chan, isSwipeUD1Ukb, isSwipeUD1Dkb)
+	mouseCtrlChan := make(chan mpts)
+	gestureTapChan := make(chan mpts)
+	gestureSwipeUp1Chan := make(chan mpts)
+	gestureSwipeDown1Chan := make(chan mpts)
+	go mouseCtrl(mouseCtrlChan)
+	go gestureTap(gestureTapChan)
+	go gestureSwipeUp1(gestureSwipeUp1Chan)
+	go gestureSwipeDown1(gestureSwipeDown1Chan)
 	var currPoint int32
 	for {
 		eventFrame := <-EventFrameChan
@@ -43,10 +43,10 @@ func frameAnalyzer(EventFrameChan chan []evdev.InputEvent) {
 				touchState.Y[currPoint] = 0
 			}
 		}
-		isMouseCtrlChan <- touchState
-		isGestureTapChan <- touchState
-		isGestureSwipeUp1Chan <- touchState
-		isGestureSwipeDown1Chan <- touchState
+		mouseCtrlChan <- touchState
+		gestureTapChan <- touchState
+		gestureSwipeUp1Chan <- touchState
+		gestureSwipeDown1Chan <- touchState
 		if isDebugMode {
 			fmt.Println(touchState)
 		}

@@ -2,10 +2,7 @@ package main
 
 import (
 	"fmt"
-	// For reading touchscreen events
-	"github.com/gvalkov/golang-evdev"
-	// For executing keyboard actions
-	"github.com/micmonay/keybd_event"
+	"github.com/go-vgo/robotgo"
 	"time"
 )
 
@@ -90,7 +87,7 @@ func downCheckThree (checkChan chan bool, StateChan chan mpts, startX int32, sta
 	return
 }
 
-func isGestureSwipeDown1 (StateChan chan mpts, UpKeyboard keybd_event.KeyBonding, DownKeyboard keybd_event.KeyBonding) {
+func gestureSwipeDown1 (StateChan chan mpts) {
 	var startX, startY int32
 	var lastTap int32
 	var isStart bool
@@ -113,10 +110,12 @@ func isGestureSwipeDown1 (StateChan chan mpts, UpKeyboard keybd_event.KeyBonding
 					switch touchState.rotation {
 					case inv:
 						fmt.Println("UP SWIPE!")
-						execKeys(UpKeyboard)
+						fnKeys := []string{"lctrl", "lalt"}
+						robotgo.KeyTap("up", fnKeys)
 					case norm:
 						fmt.Println("DOWN SWIPE!")
-						execKeys(DownKeyboard)
+						fnKeys := []string{"lctrl", "lalt"}
+						robotgo.KeyTap("down", fnKeys)
 					}
 				}
 				isStart = false
@@ -206,7 +205,7 @@ func upCheckThree (checkChan chan bool, StateChan chan mpts, startX int32, start
 	return
 }
 
-func isGestureSwipeUp1 (StateChan chan mpts, UpKeyboard keybd_event.KeyBonding, DownKeyboard keybd_event.KeyBonding) {
+func gestureSwipeUp1 (StateChan chan mpts) {
 	var startX, startY int32
 	var lastTap int32
 	var isStart bool
@@ -229,10 +228,12 @@ func isGestureSwipeUp1 (StateChan chan mpts, UpKeyboard keybd_event.KeyBonding, 
 					switch touchState.rotation {
 					case inv:
 						fmt.Println("DOWN SWIPE!")
-						execKeys(DownKeyboard)
+						fnKeys := []string{"lctrl", "lalt"}
+						robotgo.KeyTap("down", fnKeys)
 					case norm:
 						fmt.Println("UP SWIPE!")
-						execKeys(UpKeyboard)
+						fnKeys := []string{"lctrl", "lalt"}
+						robotgo.KeyTap("up", fnKeys)
 					}
 				}
 				isStart = false
@@ -242,85 +243,85 @@ func isGestureSwipeUp1 (StateChan chan mpts, UpKeyboard keybd_event.KeyBonding, 
 }
 
 // Old format code, will be converted to mpts code like the above f(x)
-func isSwipeRL1(EventChan chan *evdev.InputEvent, RightKeyboard keybd_event.KeyBonding, LeftKeyboard keybd_event.KeyBonding) {
-	var StartX, StartY int32 = -1, -1
-	var CurrX, CurrY int32
-	var SwipeLength = (maxX + 1) / 3
-	var SubSwipeLength = SwipeLength / 3
-	var TouchStart = false
-	//var TapCnt int32 //currently unused but update value with event.
-	var SwipeRtCheck1, SwipeRtCheck2, SwipeRtCheck3 = false, false, false
-	var SwipeLtCheck1, SwipeLtCheck2, SwipeLtCheck3 = false, false, false
-	var StartTime time.Time
-	for {
-		event := <-EventChan
-		if isEventMatch(event, touchDnEv) {
-			StartTime = time.Now()
-			TouchStart = true
-			//TapCnt = event.Value
-		} else if TouchStart == true {
-			if isEventMatch(event, touchXEv) {
-				//TapCnt = event.Value
-				if StartX != -1 {
-					CurrX = event.Value
-					if CurrX >= StartX+SubSwipeLength {
-						SwipeRtCheck1 = true
-					} else if CurrX <= StartX-SubSwipeLength {
-						SwipeLtCheck1 = true
-					}
-					if CurrX >= StartX+(SubSwipeLength*2) {
-						SwipeRtCheck2 = true
-					} else if CurrX <= StartX-(SubSwipeLength*2) {
-						SwipeLtCheck2 = true
-					}
-					if CurrX >= StartX+SwipeLength {
-						SwipeRtCheck3 = true
-					} else if CurrX <= StartX-SwipeLength {
-						SwipeLtCheck3 = true
-					}
-				} else {
-					StartX = event.Value
-				}
-			} else if isEventMatch(event, touchYEv) {
-				if StartY != -1 {
-					CurrY = event.Value
-					if CurrY > StartY+(maxY/10) || CurrY < StartY-(maxY/10) {
-						//Out of tolerance relook for new touch
-						TouchStart = false
-						SwipeRtCheck1, SwipeRtCheck2, SwipeRtCheck3 = false, false, false
-						SwipeLtCheck1, SwipeLtCheck2, SwipeLtCheck3 = false, false, false
-						StartX, StartY = -1, -1
-					}
-				} else {
-					StartY = event.Value
-				}
-			} else if isEventMatch(event, touchUpEv) {
-				if time.Now().Sub(StartTime) < 2*time.Second {
-					if SwipeRtCheck1 == true && SwipeRtCheck2 == true && SwipeRtCheck3 == true {
-						switch touchState.rotation {
-						case inv:
-							fmt.Println("LEFT SWIPE!")
-							execKeys(LeftKeyboard)
-						case norm:
-							fmt.Println("RIGHT SWIPE!")
-							execKeys(RightKeyboard)
-						}
-					} else if SwipeLtCheck1 == true && SwipeLtCheck2 == true && SwipeLtCheck3 == true {
-						switch touchState.rotation {
-						case inv:
-							fmt.Println("RIGHT SWIPE!")
-							execKeys(RightKeyboard)
-						case norm:
-							fmt.Println("LEFT SWIPE!")
-							execKeys(LeftKeyboard)
-						}
-					}
-				}
-				TouchStart = false
-				SwipeRtCheck1, SwipeRtCheck2, SwipeRtCheck3 = false, false, false
-				SwipeLtCheck1, SwipeLtCheck2, SwipeLtCheck3 = false, false, false
-				StartX, StartY = -1, -1
-			}
-		}
-	}
-}
+// func isSwipeRL1(EventChan chan *evdev.InputEvent, RightKeyboard keybd_event.KeyBonding, LeftKeyboard keybd_event.KeyBonding) {
+// 	var StartX, StartY int32 = -1, -1
+// 	var CurrX, CurrY int32
+// 	var SwipeLength = (maxX + 1) / 3
+// 	var SubSwipeLength = SwipeLength / 3
+// 	var TouchStart = false
+// 	//var TapCnt int32 //currently unused but update value with event.
+// 	var SwipeRtCheck1, SwipeRtCheck2, SwipeRtCheck3 = false, false, false
+// 	var SwipeLtCheck1, SwipeLtCheck2, SwipeLtCheck3 = false, false, false
+// 	var StartTime time.Time
+// 	for {
+// 		event := <-EventChan
+// 		if isEventMatch(event, touchDnEv) {
+// 			StartTime = time.Now()
+// 			TouchStart = true
+// 			//TapCnt = event.Value
+// 		} else if TouchStart == true {
+// 			if isEventMatch(event, touchXEv) {
+// 				//TapCnt = event.Value
+// 				if StartX != -1 {
+// 					CurrX = event.Value
+// 					if CurrX >= StartX+SubSwipeLength {
+// 						SwipeRtCheck1 = true
+// 					} else if CurrX <= StartX-SubSwipeLength {
+// 						SwipeLtCheck1 = true
+// 					}
+// 					if CurrX >= StartX+(SubSwipeLength*2) {
+// 						SwipeRtCheck2 = true
+// 					} else if CurrX <= StartX-(SubSwipeLength*2) {
+// 						SwipeLtCheck2 = true
+// 					}
+// 					if CurrX >= StartX+SwipeLength {
+// 						SwipeRtCheck3 = true
+// 					} else if CurrX <= StartX-SwipeLength {
+// 						SwipeLtCheck3 = true
+// 					}
+// 				} else {
+// 					StartX = event.Value
+// 				}
+// 			} else if isEventMatch(event, touchYEv) {
+// 				if StartY != -1 {
+// 					CurrY = event.Value
+// 					if CurrY > StartY+(maxY/10) || CurrY < StartY-(maxY/10) {
+// 						//Out of tolerance relook for new touch
+// 						TouchStart = false
+// 						SwipeRtCheck1, SwipeRtCheck2, SwipeRtCheck3 = false, false, false
+// 						SwipeLtCheck1, SwipeLtCheck2, SwipeLtCheck3 = false, false, false
+// 						StartX, StartY = -1, -1
+// 					}
+// 				} else {
+// 					StartY = event.Value
+// 				}
+// 			} else if isEventMatch(event, touchUpEv) {
+// 				if time.Now().Sub(StartTime) < 2*time.Second {
+// 					if SwipeRtCheck1 == true && SwipeRtCheck2 == true && SwipeRtCheck3 == true {
+// 						switch touchState.rotation {
+// 						case inv:
+// 							fmt.Println("LEFT SWIPE!")
+// 							execKeys(LeftKeyboard)
+// 						case norm:
+// 							fmt.Println("RIGHT SWIPE!")
+// 							execKeys(RightKeyboard)
+// 						}
+// 					} else if SwipeLtCheck1 == true && SwipeLtCheck2 == true && SwipeLtCheck3 == true {
+// 						switch touchState.rotation {
+// 						case inv:
+// 							fmt.Println("RIGHT SWIPE!")
+// 							execKeys(RightKeyboard)
+// 						case norm:
+// 							fmt.Println("LEFT SWIPE!")
+// 							execKeys(LeftKeyboard)
+// 						}
+// 					}
+// 				}
+// 				TouchStart = false
+// 				SwipeRtCheck1, SwipeRtCheck2, SwipeRtCheck3 = false, false, false
+// 				SwipeLtCheck1, SwipeLtCheck2, SwipeLtCheck3 = false, false, false
+// 				StartX, StartY = -1, -1
+// 			}
+// 		}
+// 	}
+// }

@@ -1,7 +1,7 @@
 package main
 
 /*
-              +---Version 0.53---+
+              +---Version 0.54---+
 <---Complete Linux Touchscreen Control Replacement--->
 	!No OS or application specific touch
 	!controls will work while in use.
@@ -18,12 +18,12 @@ package main
 	*controls upon exiting or being aborted.
     <<<--------------- Features --------------->>>
         Full mouse controls(left/right clicks, drag-select, etc)
-        1 Finger swipe (up/down/left/right)
+        1 Finger swipe (up/down)(left/right currently disabled for upgrades)
         2-10 Finger tap gestures
-	Auto-updates screen rotation & resolution
-	Supports inverted touchscreen (left/right rotation yet to come)
-	Supports touchscreen locking via vol buttons (Dn/Up 2x)
-	All active functions now use MPTS (multi-point touchstate)
+				Auto-updates screen rotation & resolution
+				Supports inverted touchscreen (left/right rotation yet to come)
+				Supports touchscreen locking 9&10 finger tap
+				All active functions now use MPTS (multi-point touchstate)
 */
 
 import (
@@ -35,28 +35,13 @@ import (
 	"time"
 	// For reading touchscreen events
 	"github.com/gvalkov/golang-evdev"
-	// For executing mouse clicks
+	// For simulated mouse
 	"github.com/bendahl/uinput"
 )
 
-// Set global values
-var maxX int32 = 7679
-var maxY int32 = 4319
-var isLocked bool = false
-var resolX int32
-var resolY int32
-var halfResolX int32
-var halfResolY int32
-var halfX, halfY int32
-var calibrated bool
-var devPath string
-var isDebugMode bool
 var mouse uinput.Mouse
 
 func main() {
-	// Create virtual mouse
-	mouse, _ = uinput.CreateMouse("/dev/uinput", []byte("touchNGoMouse"))
-	defer mouse.Close()
 	// Check Input Sanity
 	if len(os.Args) < 2 {
 		fmt.Println("\rList Devices -l")
@@ -77,9 +62,10 @@ func main() {
 	devices, err := evdev.ListInputDevices()
 	parseFatal(err, "Fail to get input device list")
 	for _, dev := range devices {
-		if os.Args[1] == "-l" {
+		switch os.Args[1] {
+		case "-l":
 			fmt.Println(dev.Name)
-		} else if os.Args[1] == dev.Name {
+		case dev.Name:
 			devPath = dev.Fn
 			break
 		}
@@ -99,11 +85,16 @@ func main() {
 		parseFatal(cmdErr, "Touchscreen re-enable failure")
 		os.Exit(1)
 	}()
+
+	// Create virtual mouse
+	mouse, _ = uinput.CreateMouse("/dev/uinput", []byte("touchNGoMouse"))
+	defer mouse.Close()
+
 	// Disable touchscreen via xinput as we
 	// will now be hijacking the events :)
 	cmd := "xinput"
 	arg := "--disable"
-	cmdErr := exec.Command(cmd, arg, "pointer:"+os.Args[1]).Run()
+	cmdErr := exec.Command(cmd, arg, "pointer:" + os.Args[1]).Run()
 	parseFatal(cmdErr, "Touchscreen disable failure")
 	// Get screen information
 	go screenDataTicker()
@@ -127,7 +118,10 @@ func main() {
 	frameAnalyzerEVCH := make(chan []evdev.InputEvent, 5)
 	go frameAnalyzer(frameAnalyzerEVCH)
 	// Run screen lock routine to handle touch locking w/vol buttons
-	go screenLock()
+	//go screenLock()
+	// screenlocking is handled in tap 9&10 because
+	// it works better and doesn't require a 2nd device
+
 	// Setup touchscreen event device
 	// and begin sending frames to analyzer
 	device, _ := evdev.Open(devPath)
