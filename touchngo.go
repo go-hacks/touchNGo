@@ -20,10 +20,10 @@ package main
         Full mouse controls(left/right clicks, drag-select, etc)
         1 Finger swipe (up/down)(left/right currently disabled for upgrades)
         2-10 Finger tap gestures
-				Auto-updates screen rotation & resolution
-				Supports inverted touchscreen (left/right rotation yet to come)
-				Supports touchscreen locking 9&10 finger tap
-				All active functions now use MPTS (multi-point touchstate)
+	Auto-updates screen rotation & resolution
+	Supports inverted touchscreen (left/right rotation yet to come)
+	Supports touchscreen locking via 9&10 finger tap
+	All active functions now use MPTS (multi-point touchstate)
 */
 
 import (
